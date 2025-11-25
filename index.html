@@ -7,7 +7,7 @@
 <style>
 body{margin:0;font-family:Arial;background:#f3f5f7;}
 .box{max-width:480px;margin:30px auto;background:white;padding:24px;border-radius:18px;box-shadow:0 4px 20px rgba(0,0,0,0.1);}
-h2{text-align:center;color:#222}
+h2{text-align:center;color:#222;}
 .sponsor-item{padding:14px;border:1px solid #ddd;border-radius:12px;margin-top:12px;background:#fafafa;cursor:pointer;}
 .instruksi{margin-top:20px;padding:16px;background:#e8f3ff;border-left:5px solid #0077ff;border-radius:12px;font-size:15px;}
 label{font-weight:bold;margin-top:16px;display:block;}
@@ -38,7 +38,7 @@ button{width:100%;margin-top:20px;padding:14px;font-size:18px;border:none;border
 </div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbwX0l8ASpmN1hMCDp0A7TMCNaE5uXJ2XHgjbO5UBtwHXRnNWHACD3eUjTSznL31XE2k/exec";
+const API = "https://script.google.com/macros/s/AKfycbwM9UIA64x9SYgonWy2PFoKxEyKs7dxfvmUBRIPPH-kL_IxqBBO45jI9eadf8Qbt_tk/exec"; // Ganti dengan URL Web App
 
 async function loadSponsors(){
   try{
@@ -46,14 +46,21 @@ async function loadSponsors(){
     const res = await req.json();
     const box = document.getElementById("sponsorList");
     if(!res.status){box.innerHTML="<p style='color:red;'>Gagal memuat sponsor</p>"; return;}
-    let html = "";
-    res.data.forEach(s=>{html+=`<div class="sponsor-item" onclick="selectSponsor('${s.hp}')"><b>${s.nama}</b><br>HP: ${s.hp}</div>`;});
-    box.innerHTML = html;
+    let html="";
+    res.data.forEach(s=>{
+      html+=`<div class="sponsor-item" onclick="selectSponsor('${s.hp}')">
+        <b>${s.nama}</b><br>HP: ${s.hp}
+      </div>`;
+    });
+    box.innerHTML=html;
     document.getElementById("instruksiBox").style.display="block";
   }catch(e){document.getElementById("sponsorList").innerHTML="<p style='color:red;'>Gagal memuat sponsor!</p>";}
 }
 
-function selectSponsor(hp){document.getElementById("sponsor").value=hp;window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });}
+function selectSponsor(hp){
+  document.getElementById("sponsor").value=hp;
+  window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+}
 
 async function joinNow(){
   const nama=document.getElementById('nama').value.trim();
