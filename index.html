@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Gabung Sponsor Modern</title>
+<style>
+  body{
+    margin:0;
+    padding:0;
+    font-family:Arial, sans-serif;
+    background:#f2f4f7;
+  }
+  .container{
+    max-width:480px;
+    margin:40px auto;
+    background:white;
+    padding:24px;
+    border-radius:18px;
+    box-shadow:0 4px 20px rgba(0,0,0,0.15);
+  }
+  h2{text-align:center;margin-bottom:20px;color:#222}
+  label{font-weight:bold;margin-top:12px;display:block}
+  input{
+    width:100%;padding:12px;margin-top:6px;
+    border-radius:10px;border:1px solid #ccc;font-size:16px
+  }
+  button{
+    width:100%;margin-top:18px;padding:14px;font-size:18px;
+    border:none;border-radius:12px;color:white;cursor:pointer;
+    background:#0066ff;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>Daftar Gabung</h2>
+
+  <label>Nama Lengkap</label>
+  <input id="nama" type="text" placeholder="Masukkan nama anda" />
+
+  <label>No HP Anda</label>
+  <input id="hp" type="text" placeholder="08xxxxxxxxxx" />
+
+  <label>ID Sponsor (No HP Sponsor)</label>
+  <input id="sponsor" type="text" placeholder="08xxxxxxxxxx" />
+
+  <button onclick="joinNow()">Saya Gabung</button>
+</div>
+
+<script>
+const BASE_URL = "https://script.google.com/macros/s/AKfycbwNKiWBvjO0l9BjmH-R-iu5TOAMtkaytVXsEqP6hUZzd_x5x3MtW0tQRihgQbwiGWOk/exec";
+
+async function joinNow(){
+  const nama = document.getElementById('nama').value.trim();
+  const hp = document.getElementById('hp').value.trim();
+  const sponsor = document.getElementById('sponsor').value.trim();
+
+  if(!nama || !hp || !sponsor){
+    alert("Semua data wajib diisi!");
+    return;
+  }
+
+  const payload = {
+    action: "addBuyer",
+    nama: nama,
+    hp: hp,
+    sponsor: sponsor
+  };
+
+  try{
+    const req = await fetch(BASE_URL,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(payload)
+    });
+
+    const res = await req.json();
+    alert(res.message || "Berhasil!");
+
+  }catch(e){
+    alert("Gagal menghubungi server: " + e);
+  }
+}
+</script>
+</body>
+</html>
