@@ -1,106 +1,136 @@
-<script>
-const BASE_URL =
-  "https://script.google.com/macros/s/AKfycby6MqATdu_aqAy30woJqNR6yitXiUBdLOsk3vyOt1W2wZ3A-x72hHgQT2T3Ami8LvBH/execc";
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daftar Sponsor - Danantara</title>
 
-// ===== LOAD SPONSOR =====
-async function loadSponsor(){
-  const sponsorID = document.getElementById("sponsor").value.trim();
-
-  document.getElementById("sponsorArea").innerHTML =
-    '<div class="loading">Memuat sponsor…</div>';
-
-  const payload = {
-    action: sponsorID ? "getSponsor" : "getMainSponsor",
-    hp: sponsorID
-  };
-
-  try{
-    const req = await fetch(BASE_URL,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify(payload)
-    });
-    const res = await req.json();
-
-    if(!res.success){
-      document.getElementById("sponsorArea").innerHTML =
-        "<div class='loading'>Sponsor tidak ditemukan</div>";
-      return;
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f4f4f4;
+      padding: 20px;
     }
 
-    let html = "<h4>Data Sponsor</h4>";
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
 
-    res.data.forEach(s => {
-      html += `
-        <div class="sponsor-item" style="padding:12px; background:#f5f7ff; border-radius:10px; margin-bottom:10px;">
-          <b>${s.nama}</b><br>
-          HP: ${s.hp}
-        </div>
-      `;
-    });
+    #sponsorList {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 15px;
+    }
 
-    // ===== Instruksi otomatis =====
-    html += `
-      <div style="
-        margin-top:15px;
-        padding:14px;
-        background:#fff4ce;
-        border-left:6px solid #ffcc00;
-        border-radius:10px;
-        font-size:15px;
-        line-height:1.5;
-      ">
-        <b>Instruksi Pembayaran & Sponsorship:</b><br>
-        • Pastikan sponsor di atas adalah benar.<br>
-        • Jika ID sponsor kosong, sistem otomatis memakai 4 sponsor utama.<br>
-        • Masukkan nomor HP sponsor jika Anda ingin sponsor tertentu.<br>
-        • Setelah data sesuai, klik tombol <b>Saya Gabung</b>.
-      </div>
-    `;
+    .card {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      border-left: 5px solid #009688;
+    }
 
-    document.getElementById("sponsorArea").innerHTML = html;
+    .loading, .error {
+      text-align: center;
+      padding: 15px;
+      font-size: 16px;
+      color: #333;
+    }
 
-  }catch(e){
-    document.getElementById("sponsorArea").innerHTML =
-      "<div class='loading'>Gagal memuat sponsor</div>";
-  }
+    #instruksi {
+      margin-top: 25px;
+      padding: 15px;
+      background: #fff3cd;
+      border-left: 5px solid #ff9800;
+      border-radius: 10px;
+      display: none;
+    }
+
+  </style>
+</head>
+<body>
+
+<h1>Daftar Sponsor</h1>
+
+<div id="status" class="loading">Memuat daftar sponsor...</div>
+
+<div id="sponsorList"></div>
+
+<div id="instruksi">
+  <h3>Instruksi Pendaftaran:</h3>
+  <p>Silakan pilih sponsor, kemudian klik tombol <b>"Saya Gabung"</b>.</p>
+  <p>Jika Anda tidak memiliki sponsor, pilih sponsor utama yang tersedia.</p>
+</div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycby6MqATdu_aqAy30woJqNR6yitXiUBdLOsk3vyOt1W2wZ3A-x72hHgQT2T3Ami8LvBH/exec";
+
+async function loadSponsors() {
+    try {
+        const res = await fetch(API_URL);
+        const data = await res.json();
+
+        const sponsorList = document.getElementById("sponsorList");
+        const statusBox = document.getElementById("status");
+        const instruksi = document.getElementById("instruksi");
+
+        statusBox.style.display = "none";
+
+        if (!data || !data.sponsors || data.sponsors.length === 0) {
+            statusBox.style.display = "block";
+            statusBox.className = "error";
+            statusBox.innerText = "Gagal memuat sponsor.";
+            return;
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const idSponsor = urlParams.get("id");
+
+        let listToShow = data.sponsors;
+
+        if (idSponsor && idSponsor.trim() !== "") {
+            // Cari sponsor sesuai ID
+            listToShow = data.sponsors.filter(s => s.id == idSponsor);
+
+            // Jika ID tidak ditemukan → fallback ke semua sponsor
+            if (listToShow.length === 0) {
+                listToShow = data.sponsors;
+            }
+        }
+
+        listToShow.forEach(s => {
+            const card = document.createElement("div");
+            card.className = "card";
+
+            card.innerHTML = `
+                <h3>${s.nama}</h3>
+                <p><b>ID Sponsor:</b> ${s.id}</p>
+                <p><b>WhatsApp:</b> ${s.wa}</p>
+                <a href="daftar.html?id=${s.id}">
+                    <button style="padding:10px 15px;margin-top:10px;background:#009688;color:white;border:none;border-radius:5px;cursor:pointer;">
+                        Saya Gabung
+                    </button>
+                </a>
+            `;
+
+            sponsorList.appendChild(card);
+        });
+
+        // Instruksi selalu muncul jika sponsor berhasil dimuat
+        instruksi.style.display = "block";
+
+    } catch (err) {
+        const statusBox = document.getElementById("status");
+        statusBox.className = "error";
+        statusBox.innerText = "Gagal menghubungi server.";
+        console.error(err);
+    }
 }
 
-// load sponsor utama ketika halaman dibuka
-loadSponsor();
-
-
-// ===== JOIN NOW =====
-async function joinNow(){
-  const nama = document.getElementById("nama").value.trim();
-  const hp = document.getElementById("hp").value.trim();
-  const sponsor = document.getElementById("sponsor").value.trim();
-
-  if(!nama || !hp){
-    alert("Nama dan nomor HP wajib diisi!");
-    return;
-  }
-
-  const payload = {
-    action: "addBuyer",
-    nama: nama,
-    hp: hp,
-    sponsor: sponsor || "AUTO"
-  };
-
-  try{
-    const req = await fetch(BASE_URL,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify(payload)
-    });
-
-    const res = await req.json();
-    alert(res.message || "Pendaftaran Berhasil!");
-
-  }catch(e){
-    alert("Gagal menghubungi server: " + e);
-  }
-}
+loadSponsors();
 </script>
 
+</body>
+</html>
