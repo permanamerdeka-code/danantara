@@ -1,171 +1,74 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Gabung Sponsor</title>
-
 <style>
-    body{
-        margin:0;
-        font-family:Arial, sans-serif;
-        background:#f3f5f7;
-    }
-    .box{
-        max-width:480px;
-        margin:30px auto;
-        background:white;
-        padding:24px;
-        border-radius:18px;
-        box-shadow:0 4px 20px rgba(0,0,0,0.1);
-    }
-    h2{margin:0;text-align:center;color:#222}
-    .sponsor-item{
-        padding:14px;
-        border:1px solid #ddd;
-        border-radius:12px;
-        margin-top:12px;
-        background:#fafafa;
-    }
-    .instruksi{
-        margin-top:20px;
-        padding:16px;
-        background:#e8f3ff;
-        border-left:5px solid #0077ff;
-        border-radius:12px;
-        font-size:15px;
-    }
-    label{
-        font-weight:bold;
-        margin-top:16px;
-        display:block;
-    }
-    input{
-        width:100%;
-        padding:12px;
-        margin-top:6px;
-        border:1px solid #ccc;
-        border-radius:10px;
-        font-size:16px;
-    }
-    button{
-        width:100%;
-        margin-top:20px;
-        padding:14px;
-        font-size:18px;
-        border:none;
-        border-radius:12px;
-        background:#0066ff;
-        color:white;
-        cursor:pointer;
-    }
+body{margin:0;font-family:Arial;background:#f3f5f7;}
+.box{max-width:480px;margin:30px auto;background:white;padding:24px;border-radius:18px;box-shadow:0 4px 20px rgba(0,0,0,0.1);}
+h2{text-align:center;color:#222}
+.sponsor-item{padding:14px;border:1px solid #ddd;border-radius:12px;margin-top:12px;background:#fafafa;cursor:pointer;}
+.instruksi{margin-top:20px;padding:16px;background:#e8f3ff;border-left:5px solid #0077ff;border-radius:12px;font-size:15px;}
+label{font-weight:bold;margin-top:16px;display:block;}
+input{width:100%;padding:12px;margin-top:6px;border:1px solid #ccc;border-radius:10px;font-size:16px;}
+button{width:100%;margin-top:20px;padding:14px;font-size:18px;border:none;border-radius:12px;background:#0066ff;color:white;cursor:pointer;}
 </style>
 </head>
-
 <body>
 
 <div class="box">
-    <h2>Pilih Sponsor</h2>
-    <div id="sponsorList">Memuat...</div>
+<h2>Pilih Sponsor</h2>
+<div id="sponsorList">Memuat...</div>
 
-    <div class="instruksi" id="instruksiBox" style="display:none;">
-        <b>Cara Gabung:</b>  
-        <br>1. Pilih sponsor di atas  
-        <br>2. Isi data lengkap  
-        <br>3. Klik tombol “Saya Gabung”
-    </div>
-
-    <label>Nama Lengkap</label>
-    <input id="nama" type="text" placeholder="Masukkan nama anda">
-
-    <label>No HP Anda</label>
-    <input id="hp" type="text" placeholder="08xxxxxxxxxx">
-
-    <label>ID Sponsor (HP Sponsor)</label>
-    <input id="sponsor" type="text" placeholder="Auto terisi setelah pilih sponsor">
-
-    <button onclick="joinNow()">Saya Gabung</button>
+<div class="instruksi" id="instruksiBox" style="display:none;">
+<b>Cara Gabung:</b><br>1. Pilih sponsor<br>2. Isi data<br>3. Klik “Saya Gabung”
 </div>
 
+<label>Nama Lengkap</label>
+<input id="nama" type="text" placeholder="Masukkan nama anda">
 
+<label>No HP Anda</label>
+<input id="hp" type="text" placeholder="08xxxxxxxxxx">
+
+<label>ID Sponsor (HP Sponsor)</label>
+<input id="sponsor" type="text" placeholder="Auto terisi setelah pilih sponsor">
+
+<button onclick="joinNow()">Saya Gabung</button>
+</div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbwQHE5slt18oAtLZILXTMGZ-WP1d0Ufr4aKK1wNNgb1vDikCBWc4fv8le4YK-LRiR9D/exec";
+const API = "https://script.google.com/macros/s/AKfycbwX0l8ASpmN1hMCDp0A7TMCNaE5uXJ2XHgjbO5UBtwHXRnNWHACD3eUjTSznL31XE2k/exec";
 
 async function loadSponsors(){
-    try{
-        const req = await fetch(API + "?action=getSponsors");
-        const res = await req.json();
-
-        const box = document.getElementById("sponsorList");
-
-        if(!res.status){
-            box.innerHTML = "<p style='color:red;'>Gagal memuat sponsor</p>";
-            return;
-        }
-
-        let html = "";
-
-        res.data.forEach(s => {
-            html += `
-            <div class="sponsor-item" onclick="selectSponsor('${s.hp}')">
-                <b>${s.nama}</b><br>
-                HP: ${s.hp}
-            </div>`;
-        });
-
-        box.innerHTML = html;
-
-        // tampilkan instruksi otomatis
-        document.getElementById("instruksiBox").style.display = "block";
-
-    }catch(e){
-        document.getElementById("sponsorList").innerHTML =
-            "<p style='color:red;'>Gagal memuat sponsor!</p>";
-    }
+  try{
+    const req = await fetch(API+"?action=getSponsors");
+    const res = await req.json();
+    const box = document.getElementById("sponsorList");
+    if(!res.status){box.innerHTML="<p style='color:red;'>Gagal memuat sponsor</p>"; return;}
+    let html = "";
+    res.data.forEach(s=>{html+=`<div class="sponsor-item" onclick="selectSponsor('${s.hp}')"><b>${s.nama}</b><br>HP: ${s.hp}</div>`;});
+    box.innerHTML = html;
+    document.getElementById("instruksiBox").style.display="block";
+  }catch(e){document.getElementById("sponsorList").innerHTML="<p style='color:red;'>Gagal memuat sponsor!</p>";}
 }
 
-function selectSponsor(hp){
-    document.getElementById("sponsor").value = hp;
-    window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
-}
+function selectSponsor(hp){document.getElementById("sponsor").value=hp;window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });}
 
 async function joinNow(){
-    const nama = document.getElementById('nama').value.trim();
-    const hp = document.getElementById('hp').value.trim();
-    const sponsor = document.getElementById('sponsor').value.trim();
-
-    if(!nama || !hp){
-        alert("Nama dan HP wajib diisi!");
-        return;
-    }
-
-    const payload = {
-        action:"addBuyer",
-        nama:nama,
-        hp:hp,
-        sponsor:sponsor === "" ? "DEFAULT" : sponsor
-    };
-
-    try{
-        const req = await fetch(API,{
-            method:"POST",
-            headers:{"Content-Type":"application/json"},
-            body:JSON.stringify(payload)
-        });
-
-        const res = await req.json();
-
-        alert(res.message || "Berhasil!");
-
-    }catch(e){
-        alert("Gagal menghubungi server: " + e);
-    }
+  const nama=document.getElementById('nama').value.trim();
+  const hp=document.getElementById('hp').value.trim();
+  const sponsor=document.getElementById('sponsor').value.trim();
+  if(!nama||!hp){alert("Nama dan HP wajib diisi!"); return;}
+  const payload={action:"addBuyer",nama:nama,hp:hp,sponsor:sponsor===""?"DEFAULT":sponsor};
+  try{
+    const req=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+    const res=await req.json();
+    alert(res.message||"Berhasil!");
+  }catch(e){alert("Gagal menghubungi server: "+e);}
 }
 
 loadSponsors();
 </script>
-
 </body>
 </html>
-
