@@ -38,7 +38,7 @@ button{width:100%;margin-top:20px;padding:14px;font-size:18px;border:none;border
 </div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbwM9UIA64x9SYgonWy2PFoKxEyKs7dxfvmUBRIPPH-kL_IxqBBO45jI9eadf8Qbt_tk/exec"; // Ganti dengan URL Web App
+const API = "https://script.google.com/macros/s/AKfycbxd9rsvH7lRqh11_U_S_KpCRBMBUYN2Tlxr1gJwp1ywR9qZD1-2oR8vFcc7OMenAlxD/exec"; // Ganti dengan Web App URL
 
 async function loadSponsors(){
   try{
@@ -69,9 +69,17 @@ async function joinNow(){
   if(!nama||!hp){alert("Nama dan HP wajib diisi!"); return;}
   const payload={action:"addBuyer",nama:nama,hp:hp,sponsor:sponsor===""?"DEFAULT":sponsor};
   try{
-    const req=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+    const req=await fetch(API,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(payload)
+    });
     const res=await req.json();
     alert(res.message||"Berhasil!");
+    // Reset form
+    document.getElementById('nama').value="";
+    document.getElementById('hp').value="";
+    document.getElementById('sponsor').value="";
   }catch(e){alert("Gagal menghubungi server: "+e);}
 }
 
